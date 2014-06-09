@@ -108,7 +108,7 @@ bool OnDownload(DWORD dwWork, DWORD dwWorkTotal, DWORD dwWorkMax, FLOAT Speed, L
 	return true;
 }
 
-BOOL OnGRF(const char *FileName, unsigned int Current, unsigned int Total, void *pData)
+bool OnGRF(const char *FileName, unsigned int Current, unsigned int Total, void *pData)
 {
 	if (Patcher.m_bExiting) return false;
 

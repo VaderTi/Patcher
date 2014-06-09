@@ -21,7 +21,7 @@ void TProgressMax(int Max);
 void OnDownloadBegin(DWORD dwWorkMax);
 bool OnDownload(DWORD dwWork, DWORD dwWorkTotal, DWORD dwWorkMax, FLOAT Speed, LPVOID pData);
 
-BOOL OnGRF(const char *FileName, unsigned int Current, unsigned int Total, void *pData);
+bool OnGRF(const char *FileName, unsigned int Current, unsigned int Total, void *pData);
 
 void DeleteFiles(CString Delete);
 

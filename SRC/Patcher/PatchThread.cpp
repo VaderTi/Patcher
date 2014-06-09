@@ -1,5 +1,10 @@
 #include "StdAfx.h"
-//#include "Grf.h"
+#include "GrfLib.h"
+#ifdef _DEBUG
+#pragma comment(lib, "grflib_d")
+#else
+#pragma comment(lib, "grflib")
+#endif
 #include "PatchThread.h"
 
 CPatchThread::CPatchThread(void)
@@ -37,9 +42,8 @@ void CPatchThread::LoadSettings(_SERVERINFO& Server, BOOL IsMain)
 	{
 		if (!IsExist)
 		{
-			//CGrf Grf;
-			//Grf.Create(m_Server.PatchGrfName);
-			//Grf.Close();
+			GrfFile Grf = GrfCreate(CStringA(m_Server.GRFNAME));
+			GrfFree(Grf);
 		}
 		CIni Ini;
 		Ini.LoadFile(m_Server.PATCHINF);
@@ -252,7 +256,7 @@ int CPatchThread::ProcessPatches()
 	}
 
 
-	//unique_ptr<CGrf> Grf(new CGrf);
+	GrfFile Grf = nullptr;
 
 	ShowStatus(Patcher.m_Language.ApplyingPatches);
 
@@ -262,7 +266,7 @@ int CPatchThread::ProcessPatches()
 	auto Patch = m_PatchList.begin();
 	auto NPatch = Patch+1;
 	auto End = m_PatchList.end();
-	CString Prev, Next;
+	CString PrevGrf, NextGrf;
 	int i = 1;
 	for (; Patch != End; ++Patch, ++i)
 	{
@@ -272,16 +276,18 @@ int CPatchThread::ProcessPatches()
 		{
 		case GPF:
 			ShowInfo(Patcher.m_Language.ApplyingProcess, Patch->PatchName, i, m_PatchesCount);
-			//if (Prev != Patch->PatchGrf)
-			//	Grf->Open(Patch->PatchGrf);
-			//PatchLoc =  szUpdates; PatchLoc += Patch->PatchName;
-			//Grf->SetCallback(OnGRF);
-			//Grf->Merge(PatchLoc);
-			////Prev = Patch->PatchGrf;
-			////if (NPatch != End)
-			////	Next = NPatch->PatchGrf;
-			////if (NPatch == End || Next != Patch->PatchGrf)
-			//	Grf->Close();
+			if (PrevGrf != Patch->PatchGrf)
+			{
+				Grf = GrfOpen(CStringA(Patch->PatchGrf));
+			}
+			PatchLoc = szUpdates; PatchLoc += Patch->PatchName;
+			GrfSetCallback(Grf, OnGRF);
+			GrfMerge(Grf, CStringA(PatchLoc));
+			PrevGrf = Patch->PatchGrf;
+			if (NPatch != End)
+				NextGrf = NPatch->PatchGrf;
+			if (NPatch == End || NextGrf != Patch->PatchGrf)
+				GrfFree(Grf);
 			bGrf = TRUE;
 			SavePatchID(Patch->iPatchID);
 			break;
@@ -291,7 +297,7 @@ int CPatchThread::ProcessPatches()
 			PatchLoc = szUpdates; PatchLoc += Patch->PatchName;
 			PatchName = _T("./"); PatchName += Patch->PatchName;
 			CopyFile(PatchLoc, PatchName, FALSE);
-			//CGrf::ExtractRGZ(PatchName);
+			ExtractRGZ(CStringA(PatchName));
 			DeleteFile(PatchName);
 			SavePatchID(Patch->iPatchID);
 			break;
@@ -301,17 +307,16 @@ int CPatchThread::ProcessPatches()
 			PatchLoc = szUpdates; PatchLoc += Patch->PatchName;
 			PatchName = _T("./"); PatchName += Patch->PatchName;
 			CopyFile(PatchLoc, PatchName, FALSE);
-			if (!UnRAR(PatchName))
-			//	throw CExcept(_T("Err::UnRAR::Extract\nRarName - '%s'"), PatchLoc);
+			UnRAR(PatchName);
 			DeleteFile(PatchName);
 			SavePatchID(Patch->iPatchID);
 			break;
 
 		case GDF:
 			ShowInfo(Patcher.m_Language.ApplyingProcess, Patch->PatchName, i, m_PatchesCount);
-			//Grf->Open(Patch->PatchGrf);
-			//Grf->MatchDelete(Patch->PatchName);
-			//Grf->Close();
+			Grf = GrfOpen(CStringA(Patch->PatchGrf));
+			GrfDelete(Grf, CStringA(Patch->PatchName));
+			GrfFree(Grf);
 			bGrf = TRUE;
 			SavePatchID(Patch->iPatchID);
 			break;
