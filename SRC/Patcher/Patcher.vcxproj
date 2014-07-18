@@ -57,7 +57,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;PATCHER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>../libs/zlib;../libs/unrar;../libs/grflib</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -70,6 +70,10 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>../libs/zlib;../libs/unrar;../libs/grflib</AdditionalLibraryDirectories>
     </Link>
+    <ResourceCompile>
+      <Culture>0x0419</Culture>
+      <AdditionalIncludeDirectories>Res/</AdditionalIncludeDirectories>
+    </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -106,10 +110,11 @@
     <ClInclude Include="PatchThread.h" />
     <ClInclude Include="Res.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="resource1.h" />
     <ClInclude Include="Settings.h" />
     <ClInclude Include="Skin.h" />
-    <ClInclude Include="StdAfx.h" />
     <ClInclude Include="Thread.h" />
+    <ClInclude Include="StdAfx.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Browser.cpp" />
@@ -125,11 +130,11 @@
     <ClCompile Include="Res.cpp" />
     <ClCompile Include="Settings.cpp" />
     <ClCompile Include="Skin.cpp" />
+    <ClCompile Include="Thread.cpp" />
     <ClCompile Include="StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Thread.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Patcher.rc" />

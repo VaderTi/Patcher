@@ -1,17 +1,8 @@
 #include "stdafx.h"
 #include "Res.h"
 
-CRes::CRes(void)
-{
-}
-
-
-CRes::~CRes(void)
-{
-}
-
 #if 0
-BOOL CRes::PackFiles(CStringArray& FilesList, CString PackName /* = _T */)
+bool CRes::PackFiles(CStringArray& FilesList, CString PackName /* = _T */)
 {
 	RESHEADER Header; ZeroMemory(&Header, RHSize);
 	CFile File, tmpFile;
@@ -61,10 +52,10 @@ BOOL CRes::PackFiles(CStringArray& FilesList, CString PackName /* = _T */)
 	File.SeekToBegin();
 	File.Write(&Header, RHSize);
 	File.Close();
-	return TRUE;
+	return true;
 }
 
-BOOL CRes::InsertResource(CString ExeName, CString FileName, CString ResName)
+bool CRes::InsertResource(CString ExeName, CString FileName, CString ResName)
 {
 	CFile File;
 	File.Open(FileName, CFile::modeRead);
@@ -79,7 +70,7 @@ BOOL CRes::InsertResource(CString ExeName, CString FileName, CString ResName)
 	if (!hResHandle)
 	{
 		MessageBox(NULL, _T("Cannt load exe to embed!"), _T("Error!"), MB_ICONERROR);
-		return FALSE;
+		return false;
 	}
 	auto bRes = UpdateResource(hResHandle, RT_RCDATA, ResName,
 		MAKELANGID(LANG_RUSSIAN, SUBLANG_RUSSIAN_RUSSIA),
@@ -87,43 +78,43 @@ BOOL CRes::InsertResource(CString ExeName, CString FileName, CString ResName)
 	if (!bRes)
 	{
 		MessageBox(NULL, _T("Cannt insert data exe!"), _T("Error!"), MB_ICONERROR);
-		return FALSE;
+		return false;
 	}
 	bRes = EndUpdateResource(hResHandle, false);
 	if (!bRes)
 	{
 		MessageBox(NULL, _T("Cannt update exe!"), _T("Error!"), MB_ICONERROR);
-		return FALSE;
+		return false;
 	}
-	return TRUE;
+	return true;
 }
 #else
 LPVOID CRes::SaveResource(const CString ResName, const CString SaveName /* = _T */, DWORD *dwResSize /* = nullptr */)
 {
 	auto hHandle = AfxGetInstanceHandle();
 
-	auto hRes = FindResource(hHandle, ResName, RT_RCDATA); // ищешь там нужный тебе ресурс
+	auto hRes = FindResource(hHandle, ResName, RT_RCDATA); // ищем нужный ресурс
 	if (!hRes)
 	{
-		MessageBox(NULL, _T("Cannt find data!"), _T("KPatcher Error!"), MB_ICONERROR);
+		MessageBox(NULL, _T("Cannt find data!"), _T("Patcher Error!"), MB_ICONERROR);
 		return nullptr;
 	}
 	auto dwSize = SizeofResource(hHandle, hRes); // размер ресурса
 	if(!dwSize)
 	{
-		MessageBox(NULL, _T("Cannt get data size!"), _T("KPatcher Error!"), MB_ICONERROR);
+		MessageBox(NULL, _T("Cannt get data size!"), _T("Patcher Error!"), MB_ICONERROR);
 		return nullptr;
 	}
-	auto hResData = LoadResource(hHandle, hRes); // получаешь хендл на нужный ресурс
+	auto hResData = LoadResource(hHandle, hRes); // получаем хендл на нужный ресурс
 	if (!hResData)
 	{
-		MessageBox(NULL, _T("Cannt load data!"), _T("KPatcher Error!"), MB_ICONERROR);
+		MessageBox(NULL, _T("Cannt load data!"), _T("Patcher Error!"), MB_ICONERROR);
 		return nullptr;
 	}
-	auto pData = LockResource(hResData); // получаешь указатель на буфер
+	auto pData = LockResource(hResData); // получаем указатель на буфер
 	if (!pData)
 	{
-		MessageBox(NULL, _T("Cannt lock data!"), _T("KPatcher Error!"), MB_ICONERROR);
+		MessageBox(NULL, _T("Cannt lock data!"), _T("Patcher Error!"), MB_ICONERROR);
 		return nullptr;
 	}
 
@@ -142,7 +133,7 @@ LPVOID CRes::SaveResource(const CString ResName, const CString SaveName /* = _T 
 	return pData;
 }
 
-BOOL CRes::ExtractResource(CString ResName, CString *SaveFolder /* = nullptr */)
+bool CRes::ExtractResource(CString ResName, CString *SaveFolder /* = nullptr */)
 {
 	CFile File, TmpFile;
 	RESHEADER Header; ZeroMemory(&Header, RHSize);
@@ -150,9 +141,9 @@ BOOL CRes::ExtractResource(CString ResName, CString *SaveFolder /* = nullptr */)
 	File.Open(ResName, CFile::modeReadWrite);
 	File.Read(&Header, RHSize);
 
-	if (memcmp(Header.Header, "PRF", 3) != 0) return FALSE;
+	if (memcmp(Header.Header, "PRF", 3) != 0) return false;
 
-	unique_ptr<BYTE[]> spTable(new BYTE[Header.TableSize]);
+	unique_ptr<uint8_t[]> spTable(new uint8_t[Header.TableSize]);
 	auto pTable = spTable.get();
 
 	File.Seek(Header.TableOffset, CFile::begin);
@@ -163,7 +154,7 @@ BOOL CRes::ExtractResource(CString ResName, CString *SaveFolder /* = nullptr */)
 		RESENTRY Entry; ZeroMemory(&Entry, RESize);
 		memcpy(&Entry, pTable, RESize);
 
-		std::vector<uint8_t> Buffer, zBuffer;
+		vector<uint8_t> Buffer, zBuffer;
 		Buffer.resize(Entry.ResSize), zBuffer.resize(Entry.zResSize);
 
 		File.Seek(Entry.ResOffset, CFile::begin);
@@ -180,7 +171,7 @@ BOOL CRes::ExtractResource(CString ResName, CString *SaveFolder /* = nullptr */)
 
 		pTable += RESize;
 	}
-	return TRUE;
+	return true;
 }
 #endif
 #ifndef PATCHER

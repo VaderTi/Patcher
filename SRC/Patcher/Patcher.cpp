@@ -35,13 +35,14 @@ BOOL CPatcher::InitInstance()
 	InitCtrls.dwSize = sizeof(InitCtrls);
 	InitCtrls.dwICC = ICC_WIN95_CLASSES;
 	auto ret = InitCommonControlsEx(&InitCtrls);
-	m_pMainWnd = &m_MainForm;
 
 	auto dwRet = GetCurrentDirectory(MAX_PATH, m_AppPath.GetBufferSetLength(MAX_PATH + 1));
 	m_AppPath.GetBuffer()[dwRet] = _T('\\'); m_AppPath.GetBuffer()[dwRet + 1] = _T('\0');
 	GetTempPath(MAX_PATH, m_TmpPath.GetBufferSetLength(MAX_PATH + 1));
+
+	CWinApp::InitInstance();
 	
-	m_Settings.LoadLocal(_T("./local.ini"));
+	m_Settings.LoadLocal(/*_T("./local.ini")*/);
 	m_Settings.LoadRemote(/*_T("./settings.ini")*/);
 
 	m_Language.Load();

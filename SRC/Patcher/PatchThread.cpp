@@ -46,7 +46,7 @@ void CPatchThread::LoadSettings(_SERVERINFO& Server, BOOL IsMain)
 			GrfFree(Grf);
 		}
 		CIni Ini;
-		Ini.LoadFile(m_Server.PATCHINF);
+		Ini.LoadFile(_T("./") + m_Server.PATCHINF);
 
 		Ini.SetSection(Patcher.m_Settings.m_rSettings.SERVER_UID);
 		m_LastPatchID = Ini.GetInt(_T("LastPatchID"), 0);
@@ -223,8 +223,8 @@ void CPatchThread::SavePatchID(int& PatchID)
 {
 	if (m_IsMain)
 	{
-		//m_pIni->SetInt(_T("LastPatchID"), PatchID);
-		//m_pIni->Save();
+		m_pIni->SetInt(_T("LastPatchID"), PatchID);
+		m_pIni->Save();
 
 	}
 	else

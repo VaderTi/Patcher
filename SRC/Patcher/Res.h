@@ -32,15 +32,15 @@ static const auto RESize = sizeof(RESENTRY);
 class CRes
 {
 public:
-	CRes(void);
-	~CRes(void);
+	CRes(void){};
+	~CRes(void){};
 
 #if 0
-	BOOL PackFiles(CStringArray& FilesList, CString PackName = _T("default.res"));
-	BOOL InsertResource(CString ExeName, CString FileName, CString ResName = _T("RES"));
+	bool PackFiles(CStringArray& FilesList, CString PackName = _T("default.res"));
+	bool InsertResource(CString ExeName, CString FileName, CString ResName = _T("RES"));
 #else //
-	LPVOID SaveResource(CString ResName, CString SaveName = CString("default.res"), DWORD *dwResSize = nullptr);
-	BOOL ExtractResource(CString ResName, CString* SaveFolder = nullptr);
+	LPVOID SaveResource(const CString ResName, CString SaveName = CString("default.res"), DWORD *dwResSize = nullptr);
+	bool ExtractResource(const CString ResName, CString* SaveFolder = nullptr);
 #endif //
 
 private:

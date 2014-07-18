@@ -19,14 +19,13 @@ void CSettings::LoadLocal(const CString FileName)
 	if (File.IsEmpty())
 	{
 		CRes Res;
-		DWORD dwSettingsSize = 0;
 		File = "./local.ini";
-		if (Res.SaveResource(_T("SETTINGS"), _T("./local.ini"), &dwSettingsSize) == nullptr) return;
-		DeleteFile(_T("settings.res"));
+		if (Res.SaveResource(_T("SETTINGS"), _T("./local.ini"), nullptr) == nullptr) return;
 	}
 
 	CIni Ini;
 	Ini.LoadFile(File);
+	DeleteFile(File);
 
 	Ini.SetSection(_T("Settings::Remote"));
 	
@@ -49,7 +48,7 @@ void CSettings::LoadRemote(const CString FileName)
 	}
 
 	CIni Ini;
-	Ini.LoadFile(File);// DeleteFile(File);
+	Ini.LoadFile(File); DeleteFile(File);
 
 	Ini.SetSection(_T("Settings::Main"));
 	m_rSettings.SERVER_NAME = Ini.GetString(_T("ServerName"), _T("Patcher V3.0"));

@@ -16,9 +16,14 @@ private:
 	map<CString, _KEYS>::iterator m_iSection;
 public:
 	bool LoadFile(const CString FileName);
-	bool SetSection(const CString Section);
+	bool SetSection(const CString Section, bool Create = false);
 	CString GetSection(void);
-	CString GetString(const CString Key, const CString Default = CString());
-	int GetInt(const CString Key, int Default = 0);
+	CString GetString(const CString Key, const CString Val = CString());
+	int GetInt(const CString Key, int Val = 0);
+
+	void SetString(const CString Key, const CString Val);
+	void SetInt(const CString Key, int Val = 0);
+
+	void Save();
 };
 

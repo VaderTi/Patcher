@@ -68,7 +68,7 @@ BOOL CPatcherForm::OnInitDialog()
 	Static = &Patcher.m_Skin.Labels[CONTROL::INFO];
 	Rect = CRect(Static->Pos, Static->Size);
 	Static->Label = new CLabel();
-	Static->Label->Create(NULL, 0, Rect, this, CONTROL::STATUS);
+	Static->Label->Create(NULL, 0, Rect, this, CONTROL::INFO);
 	Static->Label->SetTextColor(Static->FontColor);
 	Static->Label->SetFontSize(Static->FontSize);
 	Static->Label->SetFontBold(Static->Bold);

@@ -53,13 +53,11 @@ bool CIni::LoadFile(const CString FileName)
 	return true;
 }
 
-bool CIni::SetSection(const CString Section)
+bool CIni::SetSection(const CString Section, bool Create)
 {
-	if ((m_iSection = m_Sections.find(Section)) != end(m_Sections))
-	{
-		m_CurrentSection = Section;
+	m_CurrentSection = Section;
+	if ((m_iSection = m_Sections.find(m_CurrentSection)) != end(m_Sections))
 		return true;
-	}
 	return false;
 
 }
@@ -71,9 +69,9 @@ CString CIni::GetSection(void)
 }
 
 
-CString CIni::GetString(const CString Key, const CString Default)
+CString CIni::GetString(const CString Key, const CString Val)
 {
-	if (m_iSection == m_Sections.end() || !m_iSection->second.size()) return Default;
+	if (m_iSection == m_Sections.end() || !m_iSection->second.size()) return Val;
 	
 	auto Idx = begin(m_iSection->second);
 	auto End = end(m_iSection->second);
@@ -83,12 +81,56 @@ CString CIni::GetString(const CString Key, const CString Default)
 			return Idx->second;
 	}
 
-	return Default;
+	return Val;
 }
 
 
-int CIni::GetInt(const CString Key, int Default)
+int CIni::GetInt(const CString Key, int Val)
 {
-	CString Tmp; Tmp.Format(_T("%d"), Default);
+	CString Tmp; Tmp.Format(_T("%d"), Val);
 	return StrToInt(GetString(Key, Tmp));
+}
+
+void CIni::SetString(const CString Key, const CString Val)
+{
+	if (SetSection(m_CurrentSection) && m_iSection->second.size())
+	{
+		for (auto Idx = m_iSection->second.begin(); Idx != m_iSection->second.end(); ++Idx)
+		{
+			if (!Idx->first.CompareNoCase(Key))
+			{
+				Idx->second = Val;
+				return;
+			}
+		}
+	}
+
+	_KEY _Key;
+	_Key.first.Append(Key);
+	_Key.second.Append(Val);
+	m_Sections[m_CurrentSection].push_back(_Key);
+}
+
+void CIni::SetInt(const CString Key, int Val /* = 0 */)
+{
+	CString S; S.Format(_T("%d"), Val);
+	SetString(Key, S);
+}
+
+void CIni::Save()
+{
+	wfstream Stream;
+	Stream.open(m_FileName, wfstream::out | wfstream::trunc);
+
+	for (auto Section = m_Sections.begin(); Section != m_Sections.end(); ++Section)
+	{
+		CString Buffer; Buffer.Format(_T("[%s]\n"), Section->first);
+		Stream.write(Buffer, Buffer.GetLength());
+		for (auto Pair = Section->second.begin(); Pair != Section->second.end(); ++Pair)
+		{
+			CString Data; Data.Format(_T("%s=%s\n"), Pair->first, Pair->second);
+			Stream.write(Data, Data.GetLength());
+		}
+	}
+	Stream.flush(); Stream.close();
 }
