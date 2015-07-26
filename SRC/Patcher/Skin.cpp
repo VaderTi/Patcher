@@ -16,7 +16,7 @@ void CSkin::SaveSkin(CString &SkinFolder, CString ResName /* = _T */)
 	CRes Res;
 	if (!Res.SaveResource(_T("SKIN"), _T("skin.res")))
 	{
-		MessageBox(NULL, _T("Settings not embedded!"), _T("KPatcher"), MB_ICONERROR);
+		MessageBox(NULL, _T("Settings not embedded!"), _T("Patcher"), MB_ICONERROR);
 		return;
 	}
 	DeleteFiles(SkinFolder + _T("*.*"));
@@ -28,7 +28,7 @@ void CSkin::LoadSkin(const CString SkinFolder /* = _T */)
 {
 	CIni Ini;
 
-	CString StyleFile = SkinFolder;
+	auto StyleFile = SkinFolder;
 	StyleFile += _T("skin.ini");
 
 	Ini.LoadFile(StyleFile);
@@ -78,7 +78,7 @@ void CSkin::LoadSkin(const CString SkinFolder /* = _T */)
 
 	Ini.SetSection(_T("Button::Start"));
 	auto Button = &Buttons[BUTTONS::RUN];
-	Button->Button = NULL;
+	Button->Button = nullptr;
 	Button->Pos.x = Ini.GetInt(_T("Left"), 16);
 	Button->Pos.y = Ini.GetInt(_T("Top"), 106);
 	Button->Active = SkinFolder + Ini.GetString(_T("Active"), _T("start_active.png"));
@@ -90,7 +90,7 @@ void CSkin::LoadSkin(const CString SkinFolder /* = _T */)
 
 	Ini.SetSection(_T("Button::Exit"));
 	Button = &Buttons[BUTTONS::EXIT];
-	Button->Button = NULL;
+	Button->Button = nullptr;
 	Button->Pos.x = Ini.GetInt(_T("Left"), 424);
 	Button->Pos.y = Ini.GetInt(_T("Top"), 349);
 	Button->Active = SkinFolder + Ini.GetString(_T("Active"), _T("exit_active.png"));
@@ -100,7 +100,7 @@ void CSkin::LoadSkin(const CString SkinFolder /* = _T */)
 
 	Ini.SetSection(_T("Button::KRO Patches"));
 	Button = &Buttons[BUTTONS::KRO];
-	Button->Button = NULL;
+	Button->Button = nullptr;
 	Button->Pos.x = Ini.GetInt(_T("Left"), 425);
 	Button->Pos.y = Ini.GetInt(_T("Top"), 160);
 	Button->Active = SkinFolder + Ini.GetString(_T("Active"), _T("kro_u.png"));
@@ -127,12 +127,12 @@ void CSkin::LoadSkin(const CString SkinFolder /* = _T */)
 		BtnSection.Format(_T("Button::Custom %d"), (i+1));
 
 		ACTION Action;
-		auto BtnID = (BUTTONS)(BUTTONS::LAST + i);
+		auto BtnID = static_cast<BUTTONS>(BUTTONS::LAST + i);
 
 		Ini.SetSection(BtnSection);
 		Button = &Buttons[BtnID];
-		Button->Button = NULL;
-		Action = (ACTION)Ini.GetInt(_T("Action"), 0);
+		Button->Button = nullptr;
+		Action = static_cast<ACTION>(Ini.GetInt(_T("Action"), 0));
 		if (Action > ACTION::URL_OPEN) Action = ACTION::NOACTION;
 		Button->Action = Action;
 		Button->Pos.x = Ini.GetInt(_T("Left"), 0);

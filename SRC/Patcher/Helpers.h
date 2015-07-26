@@ -1,12 +1,5 @@
 #pragma once
 
-#include "unrar.hpp"
-#ifdef _DEBUG
-#pragma comment(lib, "unrar_d")
-#else
-#pragma comment(lib, "unrar")
-#endif
-
 CString GetFileExt(const CString FileName);
 
 void ShowStatus(CString Msg, ...);

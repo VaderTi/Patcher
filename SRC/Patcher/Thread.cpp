@@ -15,7 +15,7 @@ UINT __cdecl PatchThread(LPVOID pParam)
 
 	CPatchThread Patch;
 
-	CreateDirectory(szUpdates, NULL);
+	CreateDirectory(szUpdates, nullptr);
 
 	if (PatchType&1)
 	{

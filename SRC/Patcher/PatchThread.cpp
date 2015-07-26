@@ -35,14 +35,14 @@ void CPatchThread::LoadSettings(_SERVERINFO& Server, BOOL IsMain)
 	m_Server = Server;
 	CFile File;
 
-	BOOL IsExist = File.Open(m_Server.GRFNAME, CFile::modeReadWrite);
+	auto IsExist = File.Open(m_Server.GRFNAME, CFile::modeReadWrite);
 	if (IsExist) File.Close();
 
 	if (m_IsMain)
 	{
 		if (!IsExist)
 		{
-			GrfFile Grf = GrfCreate(CStringA(m_Server.GRFNAME));
+			auto Grf = GrfCreate(CStringA(m_Server.GRFNAME));
 			GrfFree(Grf);
 		}
 		CIni Ini;
@@ -90,7 +90,7 @@ BOOL CPatchThread::ParsePatchList()
 	if (Patcher.m_bExiting) return FALSE;
 
 	wfstream PatchList;
-	int iRet = 0, iPatchNum = 0;
+	int iRet, iPatchNum = 0;
 	CString Str;
 
 	PatchList.open(m_Server.PATHLISTNAME, wfstream::in);
@@ -109,7 +109,7 @@ BOOL CPatchThread::ParsePatchList()
 		if (Patcher.m_bExiting) return FALSE;
 
 		/// Пропускаем комментарии, пробелы и прочие символы
-		if (pszLine.get()[0] == _T('')||
+		if (pszLine.get()[0] == _T(' ')||
 			(pszLine.get()[0] == _T('/') && pszLine.get()[1] == _T('/'))||
 			iswspace(pszLine.get()[0]) || pszLine.get()[0] == _T(';')||
 			pszLine.get()[0] == _T('#') || pszLine.get()[0] == _T('\n')) continue;
@@ -167,7 +167,6 @@ BOOL CPatchThread::ParsePatchList()
 			CString Error;
 			Error.Format(_T("Unknown patch type %s"), Patch.PatchType);
 			throw Error;
-			return FALSE;
 		}
 
 		m_PatchList.push_back(Patch);
@@ -196,7 +195,7 @@ BOOL CPatchThread::DownloadPatches()
 	auto End = m_PatchList.end();
 
 	DbgMsg(_T("Downloading patches...\t\t"));
-	int i = 1;
+	auto i = 1;
 	for (; Idx != End; ++Idx, ++i)
 	{
 		if (Patcher.m_bExiting) return FALSE;
@@ -239,7 +238,7 @@ int CPatchThread::ProcessPatches()
 	if (Patcher.m_bExiting) return 0;
 	if (!m_PatchesCount) return m_PatchesCount;
 
-	BOOL bGrf = FALSE;
+	auto bGrf = FALSE;
 	CString PatchLoc, PatchName, Err;
 
 	DbgMsg(_T("Processing patches...\t"));
@@ -267,7 +266,7 @@ int CPatchThread::ProcessPatches()
 	auto NPatch = Patch+1;
 	auto End = m_PatchList.end();
 	CString PrevGrf, NextGrf;
-	int i = 1;
+	auto i = 1;
 	for (; Patch != End; ++Patch, ++i)
 	{
 		if (Patcher.m_bExiting) break;

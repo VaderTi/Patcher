@@ -1,7 +1,13 @@
 #include "StdAfx.h"
 #include "Patcher.h"
-//#include "UnRAR.h"
 #include "Helpers.h"
+
+#include "unrar.hpp"
+#ifdef _DEBUG
+#pragma comment(lib, "unrar_d")
+#else
+#pragma comment(lib, "unrar")
+#endif
 
 CString GetFileExt(const CString FileName)
 {
@@ -255,7 +261,7 @@ void RunClient(const CString ExeName, const CString ExeParam, const CString Logi
 		Start += _T(" -t:") + Password + _T(" ") + Login;
 	Start += _T(" ") + ExeParam;
 
-	CreateProcess(NULL, (LPTSTR)Start.GetString(), NULL, NULL, false, CREATE_DEFAULT_ERROR_MODE, NULL, NULL, &si, &pi);
+	CreateProcess(nullptr, const_cast<LPTSTR>(Start.GetString()), nullptr, nullptr, false, CREATE_DEFAULT_ERROR_MODE, nullptr, nullptr, &si, &pi);
 	Sleep(500);
 	Patcher.m_MainForm.EndDialog(IDOK);
 }
@@ -264,7 +270,7 @@ void RunCmd(const CString FirstParam, const CString SecondParam)
 {
 	if (!FirstParam.IsEmpty())
 	{
-		ShellExecute(NULL, _T("open"), FirstParam, SecondParam, NULL, SW_SHOW);
+		ShellExecute(nullptr, _T("open"), FirstParam, SecondParam, nullptr, SW_SHOW);
 	}
 }
 
@@ -277,7 +283,7 @@ int CALLBACK Callback(UINT msg, LPARAM UserData, LPARAM P1, LPARAM P2)
 
 uint32_t UnRAR(CString RarFile)
 {
-	wchar_t *pszName = RarFile.GetBuffer();
+	auto pszName = RarFile.GetBuffer();
 
 	HANDLE hData;
 	RARHeaderData				HeaderData;
@@ -287,17 +293,17 @@ uint32_t UnRAR(CString RarFile)
 
 	OpenArchiveData.ArcNameW = pszName;
 	OpenArchiveData.OpenMode = RAR_OM_LIST;
-	int iTotalUnpackSize = 0;
+	auto iTotalUnpackSize = 0;
 
 	CProgressPos(0);
 
-	if ((hData = RAROpenArchiveEx(&OpenArchiveData)) == NULL)
+	if ((hData = RAROpenArchiveEx(&OpenArchiveData)) == nullptr)
 		return  0;
 
 	while (!RARReadHeader(hData, &HeaderData))
 	{
 		iTotalUnpackSize += HeaderData.UnpSize;
-		if (RARProcessFile(hData, RAR_SKIP, NULL, NULL))
+		if (RARProcessFile(hData, RAR_SKIP, nullptr, nullptr))
 		{
 			RARCloseArchive(hData);
 			return 0;
@@ -313,13 +319,13 @@ uint32_t UnRAR(CString RarFile)
 	OpenArchiveData.ArcNameW = pszName;
 	OpenArchiveData.OpenMode = RAR_OM_EXTRACT;
 
-	if ((hData = RAROpenArchiveEx(&OpenArchiveData)) == NULL)
+	if ((hData = RAROpenArchiveEx(&OpenArchiveData)) == nullptr)
 		return 0;
 
 	RARSetCallback(hData, Callback, NULL);
 	while (!RARReadHeader(hData, &HeaderData))
 	{
-		if (RARProcessFile(hData, RAR_EXTRACT, NULL, NULL))
+		if (RARProcessFile(hData, RAR_EXTRACT, nullptr, nullptr))
 		{
 			RARCloseArchive(hData);
 			return 0;

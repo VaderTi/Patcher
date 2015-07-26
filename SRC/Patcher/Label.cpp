@@ -26,27 +26,27 @@ HBRUSH CLabel::CtlColor(CDC* pDC, UINT /*nCtlColor*/)
 	pDC->SetTextColor(m_crText);
 	pDC->SelectObject(&m_Font);
 	pDC->SetBkMode(TRANSPARENT);
-	return (HBRUSH)GetStockObject(NULL_BRUSH);
+	return static_cast<HBRUSH>(GetStockObject(NULL_BRUSH));
 }
 
 BOOL CLabel::OnEraseBkgnd(CDC* pDC)
 {
-	if (m_Bmp.GetSafeHandle() == NULL)
+	if (m_Bmp.GetSafeHandle() == nullptr)
 	{
 		CRect Rect;
 		GetWindowRect(&Rect);
-		CWnd *pParent = GetParent();
+		auto pParent = GetParent();
 		ASSERT(pParent);
 		pParent->ScreenToClient(&Rect);  //convert our corrdinates to our parents
 		//copy what's on the parents at this point
-		CDC *pDC = pParent->GetDC();
+		auto DC = pParent->GetDC();
 		CDC MemDC;
-		MemDC.CreateCompatibleDC(pDC);
-		m_Bmp.CreateCompatibleBitmap(pDC,Rect.Width(),Rect.Height());
-		CBitmap *pOldBmp = MemDC.SelectObject(&m_Bmp);
-		MemDC.BitBlt(0,0,Rect.Width(),Rect.Height(),pDC,Rect.left,Rect.top,SRCCOPY);
+		MemDC.CreateCompatibleDC(DC);
+		m_Bmp.CreateCompatibleBitmap(DC, Rect.Width(), Rect.Height());
+		auto pOldBmp = MemDC.SelectObject(&m_Bmp);
+		MemDC.BitBlt(0,0,Rect.Width(), Rect.Height(),DC,Rect.left,Rect.top,SRCCOPY);
 		MemDC.SelectObject(pOldBmp);
-		pParent->ReleaseDC(pDC);
+		pParent->ReleaseDC(DC);
 	}
 	else //copy what we copied off the parent the first time back onto the parent
 	{
@@ -54,7 +54,7 @@ BOOL CLabel::OnEraseBkgnd(CDC* pDC)
 		GetClientRect(Rect);
 		CDC MemDC;
 		MemDC.CreateCompatibleDC(pDC);
-		CBitmap *pOldBmp = MemDC.SelectObject(&m_Bmp);
+		auto pOldBmp = MemDC.SelectObject(&m_Bmp);
 		pDC->BitBlt(0,0,Rect.Width(),Rect.Height(),&MemDC,0,0,SRCCOPY);
 		MemDC.SelectObject(pOldBmp);
 	}
@@ -64,7 +64,7 @@ BOOL CLabel::OnEraseBkgnd(CDC* pDC)
 
 LRESULT CLabel::OnSetText(WPARAM wParam,LPARAM lParam)
 {
-	LRESULT Result = Default();
+	auto Result = Default();
 	Invalidate();
 	UpdateWindow();
 	return Result;
@@ -73,7 +73,7 @@ LRESULT CLabel::OnSetText(WPARAM wParam,LPARAM lParam)
 void CLabel::ReconstructFont()
 {
 	m_Font.DeleteObject();
-	BOOL bCreated = m_Font.CreateFontIndirect(&m_LF);
+	auto bCreated = m_Font.CreateFontIndirect(&m_LF);
 
 	ASSERT(bCreated);
 }

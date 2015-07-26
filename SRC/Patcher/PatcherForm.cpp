@@ -36,7 +36,12 @@ BOOL CPatcherForm::OnInitDialog()
 
 	m_pSkin = new CImage();
 	m_pSkin->Load(Patcher.m_Skin.SkinFile);
-	if (m_pSkin->IsNull()) EndDialog(IDCANCEL);
+	if (m_pSkin->IsNull())
+	{
+		DbgMsg(_T("Skin not found at path %s "), Patcher.m_Skin.SkinFile);
+		EndDialog(IDCANCEL);
+		return FALSE;
+	}
 
 	DrawForm();
 
@@ -49,7 +54,7 @@ BOOL CPatcherForm::OnInitDialog()
 	auto Browser = &Patcher.m_Skin.Browsers[CONTROL::NOTICE];
 	Rect = CRect(Browser->Pos, Browser->Size);
 	Browser->Browser = dynamic_cast<CBrowser*>(RUNTIME_CLASS(CBrowser)->CreateObject());
-	Browser->Browser->Create(NULL, _T(""), 0, Rect, this, CONTROL::NOTICE);
+	Browser->Browser->Create(nullptr, _T(""), 0, Rect, this, CONTROL::NOTICE);
 	Browser->Browser->Navigate(Patcher.m_Settings.m_rSettings.NOTICE_URL);
 	Browser->Browser->ShowWindow(SW_SHOW);
 	Browser->Browser->UpdateWindow();
@@ -57,7 +62,7 @@ BOOL CPatcherForm::OnInitDialog()
 	auto Static = &Patcher.m_Skin.Labels[CONTROL::STATUS];
 	Rect = CRect(Static->Pos, Static->Size);
 	Static->Label = new CLabel();
-	Static->Label->Create(NULL, 0, Rect, this, CONTROL::STATUS);
+	Static->Label->Create(nullptr, 0, Rect, this, CONTROL::STATUS);
 	Static->Label->SetTextColor(Static->FontColor);
 	Static->Label->SetFontSize(Static->FontSize);
 	Static->Label->SetFontBold(Static->Bold);
@@ -68,7 +73,7 @@ BOOL CPatcherForm::OnInitDialog()
 	Static = &Patcher.m_Skin.Labels[CONTROL::INFO];
 	Rect = CRect(Static->Pos, Static->Size);
 	Static->Label = new CLabel();
-	Static->Label->Create(NULL, 0, Rect, this, CONTROL::INFO);
+	Static->Label->Create(nullptr, 0, Rect, this, CONTROL::INFO);
 	Static->Label->SetTextColor(Static->FontColor);
 	Static->Label->SetFontSize(Static->FontSize);
 	Static->Label->SetFontBold(Static->Bold);
@@ -147,7 +152,7 @@ void CPatcherForm::DrawForm(void)
 			for (; (x < nSkinWidth) && (m_pSkin->GetPixel(x, y) == CLR_TRANCPERENT); x++);
 
 			// «апоминаем первый не прозрачный пиксель
-			int iLeftX = x;
+			auto iLeftX = x;
 
 			// ѕеребираем не прозрачные пиксели
 			for (; (x < nSkinWidth) && (m_pSkin->GetPixel(x, y) != CLR_TRANCPERENT); x++);
@@ -162,7 +167,7 @@ void CPatcherForm::DrawForm(void)
 
 	x = GetSystemMetrics(SM_CXSCREEN)/2 - (nSkinWidth/2);
 	y = GetSystemMetrics(SM_CYSCREEN)/2 - (nSkinHeight/2);
-	SetWindowPos(NULL, x, y, nSkinWidth, nSkinHeight, NULL);
+	SetWindowPos(nullptr, x, y, nSkinWidth, nSkinHeight, NULL);
 	SetWindowRgn(Rgn, TRUE);
 
 	Rgn.DeleteObject();
@@ -191,20 +196,20 @@ void CPatcherForm::OnPaint()
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		int cxIcon = GetSystemMetrics(SM_CXICON);
-		int cyIcon = GetSystemMetrics(SM_CYICON);
+		auto cxIcon = GetSystemMetrics(SM_CXICON);
+		auto cyIcon = GetSystemMetrics(SM_CYICON);
 
 		CRect rect;
 		GetClientRect(&rect);
-		int x = (rect.Width() - cxIcon + 1) / 2;
-		int y = (rect.Height() - cyIcon + 1) / 2;
+		auto x = (rect.Width() - cxIcon + 1) / 2;
+		auto y = (rect.Height() - cyIcon + 1) / 2;
 
 		dc.DrawIcon(x, y, m_hIcon);
 	}
 	else
 	{
 		CPaintDC dc(this);
-		CDC *MemDC = CDC::FromHandle(m_pSkin->GetDC());
+		auto MemDC = CDC::FromHandle(m_pSkin->GetDC());
 		//BLENDFUNCTION blend;
 		//blend.AlphaFormat = AC_SRC_ALPHA;
 		//blend.BlendFlags = 0;
@@ -283,7 +288,7 @@ void CPatcherForm::OnButtonDown(UINT nID)
 	case KP_CLOSE:
 		if (Patcher.m_bWorking)
 		{
-			int iRet = MessageBox(Patcher.m_Language.PatchInProgress,
+			auto iRet = MessageBox(Patcher.m_Language.PatchInProgress,
 				_T("Patcher Warning!"), MB_OKCANCEL | MB_ICONWARNING);
 			if (iRet == IDOK) Patcher.m_bExiting = TRUE;
 			break;

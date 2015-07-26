@@ -50,7 +50,7 @@ BOOL CImgButton::PreTranslateMessage(MSG* pMsg)
 HBRUSH CImgButton::CtlColor(CDC* pDC, UINT /*nCtlColor*/)
 {
 	pDC->SetBkMode(TRANSPARENT);
-	return (HBRUSH)::GetStockObject(NULL_BRUSH);
+	return static_cast<HBRUSH>(::GetStockObject(NULL_BRUSH));
 }
 
 BOOL CImgButton::OnEraseBkgnd(CDC* pDC)
@@ -65,12 +65,12 @@ void CImgButton::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 
 	Graphics gx(dc);
 
-	Image *Img = m_imgStandart;
-	UINT state = lpDrawItemStruct->itemState;
+	auto Img = m_imgStandart;
+	auto state = lpDrawItemStruct->itemState;
 
-	if ((state & ODS_SELECTED) && m_imgPressed != NULL) Img = m_imgPressed;
-	else if (m_Disabled && m_imgDisabled != NULL) Img = m_imgDisabled;
-	else if (m_Hovering && m_imgHovered != NULL) Img = m_imgHovered;
+	if ((state & ODS_SELECTED) && m_imgPressed != nullptr) Img = m_imgPressed;
+	else if (m_Disabled && m_imgDisabled != nullptr) Img = m_imgDisabled;
+	else if (m_Hovering && m_imgHovered != nullptr) Img = m_imgHovered;
 
 	Rect rc(0, 0, Img->GetWidth(), Img->GetHeight());
 
@@ -214,7 +214,7 @@ BOOL CImgButton::LoadImages(LPCTSTR lpszStandart, LPCTSTR lpszHovered /* = NULL 
 		}
 	}
 
-	SetWindowPos(NULL, -1, -1, m_imgStandart->GetWidth(), m_imgStandart->GetHeight(),
+	SetWindowPos(nullptr, -1, -1, m_imgStandart->GetWidth(), m_imgStandart->GetHeight(),
 		SWP_NOMOVE|SWP_NOZORDER|SWP_NOREDRAW|SWP_NOACTIVATE);
 
 	return TRUE;

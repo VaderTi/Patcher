@@ -50,7 +50,7 @@ void CBrowser::OnBeforeNavigate2(LPCTSTR lpszURL, DWORD nFlags, LPCTSTR lpszTarg
 {
 	if (Patcher.m_Settings.m_rSettings.NOTICE_URL.CompareNoCase(lpszURL) != 0)
 	{
-		ShellExecute(NULL, _T("open"), lpszURL, nullptr, nullptr, SW_SHOW);
+		ShellExecute(nullptr, _T("open"), lpszURL, nullptr, nullptr, SW_SHOW);
 		return;
 	}
 

@@ -15,14 +15,14 @@ CInternet::CInternet(void)
 
 	IsConnected = FALSE;
 
-	m_URL = NULL;
-	m_hFile = NULL;
-	m_hOpen = NULL;
-	m_hConnect = NULL;
-	m_hRequest = NULL;
-	m_OnWorkBegin = NULL;
-	m_OnWork = NULL;
-	m_pData = NULL;
+	m_URL = nullptr;
+	m_hFile = nullptr;
+	m_hOpen = nullptr;
+	m_hConnect = nullptr;
+	m_hRequest = nullptr;
+	m_OnWorkBegin = nullptr;
+	m_OnWork = nullptr;
+	m_pData = nullptr;
 
 	m_dwReadSize = 16*1024;
 	m_dwLastError = 0;
@@ -46,10 +46,10 @@ int CInternet::Connect(LPCTSTR lpszUrl)
 	if (m_URLC.dwPasswordLength)
 		 Password.Append(m_URLC.lpszPassword, m_URLC.dwPasswordLength);
 
-	if (!(m_hOpen = InternetOpen(_T("KPatcher"), INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0)))
+	if (!(m_hOpen = InternetOpen(_T("KPatcher"), INTERNET_OPEN_TYPE_PRECONFIG, nullptr, nullptr, 0)))
 	{
 		Err.Format(_T("Err:WinInet:InternetOpen. Error - %u"), GetLastError());
-		throw Err;
+		return -1;
 	}
 
 	if (!(m_hConnect = InternetConnect(m_hOpen, HostUrl, m_URLC.nPort, Login,
@@ -57,7 +57,7 @@ int CInternet::Connect(LPCTSTR lpszUrl)
 	{
 		Err.Format(_T("Err:WinInet:InternetConnect. Address:Port - %s:%d .Error ID - %u."),
 			HostUrl, m_URLC.nPort, GetLastError());
-		throw Err;
+		return -1;
 	}
 
 	if (m_URLC.nScheme == INTERNET_SCHEME_FTP)
@@ -73,17 +73,17 @@ void CInternet::Disconnect()
 	if (m_hRequest)
 	{
 		InternetCloseHandle(m_hRequest);
-		m_hRequest = NULL;
+		m_hRequest = nullptr;
 	}
 	if (m_hConnect)
 	{
 		InternetCloseHandle(m_hConnect);
-		m_hConnect = NULL;
+		m_hConnect = nullptr;
 	}
 	if (m_hOpen)
 	{
 		InternetCloseHandle(m_hOpen);
-		m_hOpen = NULL;
+		m_hOpen = nullptr;
 	}
 
 	ZeroMemory(&m_URLC, sizeof(URL_COMPONENTS));
@@ -131,14 +131,14 @@ int CInternet::Download(LPCTSTR lpszFileName, BOOL Patch /* = TRUE */)
 
 	float Speed = 0.;
 
-	BOOL Ret = FALSE;
+	auto Ret = FALSE;
 
 	PVOID pData = nullptr;
 
 	if ((GetFileAttributes(SName) != INVALID_FILE_ATTRIBUTES) && Patch)
 	{
 		m_hFile = CreateFile(SName, GENERIC_WRITE, FILE_SHARE_READ,
-							NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+							nullptr, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
 
 		GetFileSizeEx(m_hFile, &liSize);
 		SetFilePointerEx(m_hFile, liSize, &liNewPos, FILE_BEGIN);
@@ -147,7 +147,7 @@ int CInternet::Download(LPCTSTR lpszFileName, BOOL Patch /* = TRUE */)
 	else
 	{
 		m_hFile = CreateFile(SName, GENERIC_WRITE, FILE_SHARE_READ,
-							NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+							nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
 	}
 
 	if (m_hFile == INVALID_HANDLE_VALUE)
@@ -155,7 +155,7 @@ int CInternet::Download(LPCTSTR lpszFileName, BOOL Patch /* = TRUE */)
 		m_dwLastError = GetLastError();
 		Err.Format(_T("Err:Kernel:CreateFile. File - '%s'. Error - %u."),
 			SName, m_dwLastError);
-		throw Err;
+
 	}
 
 	if (m_URLC.nScheme == INTERNET_SCHEME_FTP)
@@ -168,31 +168,31 @@ int CInternet::Download(LPCTSTR lpszFileName, BOOL Patch /* = TRUE */)
 	case INTERNET_SCHEME_HTTP:
 		Url = m_URLC.lpszUrlPath;
 		Url += lpszFileName;
-		m_hRequest = HttpOpenRequest(m_hConnect, NULL, Url,
-									 NULL, NULL, NULL, INTERNET_FLAG_NO_CACHE_WRITE|
+		m_hRequest = HttpOpenRequest(m_hConnect, nullptr, Url,
+									 nullptr, nullptr, nullptr, INTERNET_FLAG_NO_CACHE_WRITE|
 									 INTERNET_FLAG_PRAGMA_NOCACHE, NULL);
 		if (!m_hRequest)
 		{
 			Err.Format(_T("Err:WinInet:HttpOpenRequest. Request - '%s'. Error - %u."),
 				Url, GetLastError());
-			throw Err;
+			return -1;
 		}
 
-		Ret = HttpSendRequest(m_hRequest, Header, Header.GetLength(), NULL, 0);
+		Ret = HttpSendRequest(m_hRequest, Header, Header.GetLength(), nullptr, 0);
 		if (!Ret)
 		{
 			Err.Format(_T("Err:WinInet:HttpSendRequest. Request - '%s'. Error - %u."),
 				Url, GetLastError());
-			throw Err;
+			return -1;
 		}
 
 		Ret = HttpQueryInfo(m_hRequest, HTTP_QUERY_CONTENT_LENGTH|
-							 HTTP_QUERY_FLAG_NUMBER, &dwFileSize, &dwSize, 0);
+							 HTTP_QUERY_FLAG_NUMBER, &dwFileSize, &dwSize, nullptr);
 		if (!Ret)
 		{
 			Err.Format(_T("Err:WinInet:HttpQueryInfo. Request - '%s'. Error - %u."),
 				Url, GetLastError());
-			throw Err;
+			return -1;
 		}
 		break;
 
@@ -213,11 +213,11 @@ Repeat:
 			}
 			Err.Format(_T("Err:WinInet:FtpFindFirstFile. FileName - '%s'. Error - %u."),
 				lpszFileName, GetLastError());
-			throw Err;
+			return -1;
 		}
 		InternetCloseHandle(hFind);
 		dwFileSize = Data.nFileSizeLow;
-		FtpCommand(m_hConnect, FALSE, FTP_TRANSFER_TYPE_BINARY, Command, NULL, NULL);
+		FtpCommand(m_hConnect, FALSE, FTP_TRANSFER_TYPE_BINARY, Command, NULL, nullptr);
 		m_hRequest = FtpOpenFile(m_hConnect, lpszFileName, GENERIC_READ, FTP_TRANSFER_TYPE_BINARY, 0);
 		break;
 
@@ -228,7 +228,7 @@ Repeat:
 	m_dwFileSize = dwFileSize;
 	if (m_OnWork)
 		if (dwFileSize == liSize.LowPart)
-			goto Return;
+			goto End;
 
 	pData = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, m_dwReadSize);
 	if (!pData)
@@ -236,7 +236,7 @@ Repeat:
 		m_dwLastError = GetLastError();
 		wchar_t szError[MAX_PATH] = _T("");
 		swprintf_s(szError, MAX_PATH, _T("Err:Kernel:HeapAlloc. Allocation Error!. Error - %u."), m_dwLastError);
-		throw szError;
+		return -1;
 	}
 
 	if (m_OnWorkBegin) m_OnWorkBegin(dwFileSize);
@@ -247,14 +247,14 @@ Repeat:
 	{
 		if (InternetReadFile(m_hRequest, pData, m_dwReadSize, &dwBytesReaded))
 		{
-			if (!WriteFile(m_hFile, pData, dwBytesReaded, &dwBytesWritten, 0))
+			if (!WriteFile(m_hFile, pData, dwBytesReaded, &dwBytesWritten, nullptr))
 			{
 				HeapFree(GetProcessHeap(), 0, pData);
 				CloseHandle(m_hFile);
 				m_dwLastError = GetLastError();
 				wchar_t szError[MAX_PATH] = _T("");
 				swprintf_s(szError, MAX_PATH, _T("Err:Kernel:WriteFile. Error - %u."), m_dwLastError);
-				throw szError;
+				return -1;
 			}
 		}
 		if (!m_OnWork) continue;
@@ -264,13 +264,6 @@ Repeat:
 		dwCT = GetTickCount();
 		dwDiffSpeedTick = dwCT - dwLastSpeedTick;
 		dwDiffUpdateTick = dwCT - dwLastUpdateTick;
-		//if (dwDiffTick < 1000)
-		//{
-		//	if( m_OnWork )
-		//		if ( !m_OnWork(dwBytesReaded, dwBytesReadedTotal, dwFileSize, Speed, m_pData) )
-		//			goto Return;
-		//}
-		//else
 		if (dwDiffUpdateTick > 250)
 		{
 			if (dwDiffSpeedTick > 1000)
@@ -283,13 +276,13 @@ Repeat:
 			{
 				if ( !m_OnWork(dwBytesReaded, dwBytesReadedTotal, dwFileSize, Speed, m_pData) )
 				{
-					goto Return;
+					goto End;
 				}
 			}
 			dwLastUpdateTick = GetTickCount();
 		}
 	}
-	Return:
+	End:
 	HeapFree(GetProcessHeap(), 0, pData);
 	CloseHandle(m_hFile);
 	InternetCloseHandle(m_hRequest);

@@ -15,7 +15,7 @@ CSettings::~CSettings(void)
 
 void CSettings::LoadLocal(const CString FileName)
 {
-	CString File = FileName;
+	auto File = FileName;
 	if (File.IsEmpty())
 	{
 		CRes Res;
@@ -37,7 +37,7 @@ void CSettings::LoadLocal(const CString FileName)
 
 void CSettings::LoadRemote(const CString FileName)
 {
-	CString File = FileName;
+	auto File = FileName;
 	if (File.IsEmpty())
 	{
 		CInternet Inet;
@@ -48,7 +48,7 @@ void CSettings::LoadRemote(const CString FileName)
 	}
 
 	CIni Ini;
-	Ini.LoadFile(File); DeleteFile(File);
+	Ini.LoadFile(File); //DeleteFile(File);
 
 	Ini.SetSection(_T("Settings::Main"));
 	m_rSettings.SERVER_NAME = Ini.GetString(_T("ServerName"), _T("Patcher V3.0"));
