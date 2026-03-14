@@ -23,8 +23,6 @@
 ## Table of Contents
 
 - [Features](#features)
-  - [KPatcher Features](#kpatcher-features)
-  - [Config Tool Features](#config-tool-features)
 - [Setup Guide](#setup-guide)
 - [Architecture Overview](#architecture-overview)
 - [Project Structure](#project-structure)
@@ -47,30 +45,14 @@
 
 ## Features
 
-### KPatcher Features
-
 1. **Fast GRF/GPF merge** – efficiently merges patch archives directly into the target GRF file.
-2. **GRF defragmentation** – reclaims wasted space inside GRF archives after repeated patching.
-3. **Delete files from GRF by mask** – removes entries matching a wildcard pattern from any GRF archive.
-4. **Delete client files by mask** – removes loose files or directories from the game folder using a wildcard mask.
-5. **Unpack RGZ/RAR archives** – decompresses zlib-based RGZ archives and extracts RAR archives.
-6. **Patch any GRF in the client folder** – each patch entry can target a different GRF file, not just the default one.
-7. **Unique auto-update** – the patcher can update itself and related files before applying game patches.
-8. **Official patch server support** – built-in button to pull patches from the Korean Ragnarok Online servers (`webpatch.ragnarok.co.kr`).
-9. **Simple skinning** – fully customisable window shape and UI layout driven by a `skin.ini` file.
-10. **Remote settings and auto-update** – `settings.ini` and `update.ini` are fetched from a configurable remote URL so server-side changes are picked up automatically.
-11. **Fully embedded skin** – the skin folder can be compiled into the EXE as a compressed resource blob and extracted at runtime.
-12. **New Login System support** – can pass credentials to the game client on launch.
-
-### Config Tool Features
-
-The **Config Tool** (`ConfigTool`) is a companion utility for preparing a release build of KPatcher:
-
-1. **Embed configuration file** – bakes `settings.ini` (or `Localhost.kpsf`) directly into the patcher EXE.
-2. **Embed language file** – compiles the localisation string file into the EXE resource table.
-3. **Embed skin** – packages the skin folder as a compressed resource blob inside the EXE.
-4. **Change patcher icon** – replaces the default application icon in the EXE with a custom one.
-5. **Get CRC of any file** – computes the CRC checksum of a file for use in `update.ini` integrity checks.
+2. **Delete files from GRF by mask** – removes entries matching a wildcard pattern from any GRF archive.
+3. **Delete client files by mask** – removes loose files or directories from the game folder using a wildcard mask.
+4. **Unpack RGZ/RAR archives** – decompresses zlib-based RGZ archives and extracts RAR archives.
+5. **Patch any GRF in the client folder** – each patch entry can target a different GRF file, not just the default one.
+6. **Simple skinning** – fully customisable window shape and UI layout driven by a `skin.ini` file.
+7. **Remote settings** – `settings.ini` is fetched from a configurable remote URL so server-side changes are picked up automatically.
+8. **Fully embedded skin** – the skin folder can be compiled into the EXE as a compressed resource blob and extracted at runtime.
 
 ---
 
@@ -78,13 +60,12 @@ The **Config Tool** (`ConfigTool`) is a companion utility for preparing a releas
 
 Follow these steps to configure and release KPatcher for your private server:
 
-1. **Edit `Localhost.kpsf`** – set the bootstrap URL that points to your web server where `settings.ini` is hosted.
+1. **Edit `SRC/Patcher/Res/local.ini`** – set the bootstrap URL that points to your web server where `settings.ini` is hosted.
 2. **Prepare a language file** – if no translation exists for your language, create one based on an existing language file and add it to the project.
 3. **Create your skin** – design a background image (`skin.png`) and button images, then configure their positions in `skin.ini`. Use `#FF00FF` as the transparency colour for non-rectangular window edges.
-4. **Upload server-side files** – place `settings.ini`, `update.ini`, the patch list (`patch.lst`), and all patch files on your web server.
+4. **Upload server-side files** – place `settings.ini`, the patch list (`patch.lst`), and all patch files on your web server.
 5. **Edit `settings.ini`** – configure `PatchListURL`, `FileServerURL`, `Grf`, `NoticeURL`, the executable name, and any other runtime settings.
-6. **Edit `update.ini`** – list any patcher self-update entries with their CRC checksums (obtainable via Config Tool).
-7. **Build with Config Tool** – use the Config Tool to embed the config file, language file, and skin into the final `Patcher.exe`, and optionally replace the icon.
+6. **Build the solution** – open `Patcher.sln` in Visual Studio and build the Release configuration.
 
 ---
 
