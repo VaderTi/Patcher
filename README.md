@@ -1,5 +1,17 @@
 # KPatcher
 
+![C++](https://img.shields.io/badge/Language-C%2B%2B-00599C?logo=cplusplus&logoColor=white)
+![Windows](https://img.shields.io/badge/Platform-Windows-0078D6?logo=windows&logoColor=white)
+![MFC](https://img.shields.io/badge/Framework-MFC-68217A?logo=microsoft&logoColor=white)
+![Visual Studio](https://img.shields.io/badge/IDE-Visual%20Studio%202015%2B-5C2D91?logo=visualstudio&logoColor=white)
+![Win32](https://img.shields.io/badge/Arch-Win32-6e6e6e)
+![ZLib](https://img.shields.io/badge/Lib-zlib-lightgrey)
+![UnRAR](https://img.shields.io/badge/Lib-UnRAR-lightgrey)
+![HTTP/FTP](https://img.shields.io/badge/Protocol-HTTP%20%7C%20FTP-22863a)
+![Ragnarok Online](https://img.shields.io/badge/Game-Ragnarok%20Online-blue)
+[![GitHub Stars](https://img.shields.io/github/stars/VaderTi/Patcher?style=social)](https://github.com/VaderTi/Patcher/stargazers)
+[![GitHub Forks](https://img.shields.io/github/forks/VaderTi/Patcher?style=social)](https://github.com/VaderTi/Patcher/network/members)
+
 **KPatcher** is a skinnable game patcher and launcher written in C++ (MFC/Win32), designed for **Ragnarok Online** private and official servers. It downloads patch files from a remote HTTP or FTP server, applies them to the game's GRF archives and loose files, and can automatically launch the game client afterwards.
 
 **Supported GRF versions:** all versions  
